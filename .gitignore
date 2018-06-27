@@ -41,3 +41,16 @@ MagPi/
 .config/
 .cache/
 ./PiFiles/RPi.GPIO-0.6.3.tar
+.Xauthority
+.bash_history
+.bashsrc
+.pki/
+.profile
+.themes/
+.thonny/
+.bash_logout
+.bashrc
+.gitconfig
+.xsession-errors
+*.old
+python_games/
