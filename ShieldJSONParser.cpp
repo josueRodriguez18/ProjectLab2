@@ -1,22 +1,25 @@
-
-const char* ssid = "TTU Swarm Field"; //ssid
-const char* password = NULL;
+#include "WiFi.h"
+#include "ArduinoJson.h"
+char ssid[] = "TTU Swarm Field";
+IPAddress ip(172,16,0,1);
 String jData;
-IPAddress server(172,16,0,1);
-WiFiEspClient client;
+
+WiFiClient client;
+
 void setup(){
     //connects to router
-    WiFi.begin(ssid, password);
+    WiFi.begin(ssid);
     while(WiFi.status() != WL_CONNECTED){
         delay(1000); Serial.print("Connecting to SSID..");
         //if not connected output connecting and try to connect again
-        WiFi.begin(ssid, password);
+        WiFi.begin(ssid);
     }
-    client.connect(server, 8001);
+    client.connect(ip, 8001);
+    //should be delted if memory becomes an issue
     while(!client.connected()){
         //if not connected to server output connecting and try to connect again
         delay(1000); Serial.print("Connecting to server..");
-        client.connect(server, 8001);
+        client.connect(ip, 8001);
     };
 
 }
