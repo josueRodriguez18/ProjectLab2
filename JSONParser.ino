@@ -1,16 +1,15 @@
 #include "ArduinoJson.h"
-#include "WiFiEspClient.h"
+#include "WifiEspClient.h"
 #include "WiFiEsp.h"
 #include "utility/EspDrv.h"
-//unresolved dependency issues
+#include "_ansi.hArduino.h"
 
 
 const char* ssid = "TTU Swarm Field"; //ssid
 const char* password = NULL;
 String jData;
-//problematic
 IPAddress server(172,16,0,1);
-WiFiEspClient client; //client object
+WiFiEspClient client;
 void setup(){
     //connects to router
     WiFi.begin(ssid, password);
