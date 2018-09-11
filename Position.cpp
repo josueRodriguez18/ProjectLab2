@@ -2,7 +2,7 @@
 class Object{
     public:
         //original coordinates, original orientation, distance to ball, grid position
-        double pos[2], orientation, toBall, g_pos[];
+        double pos[2], orientation, distanceToBall, gridPos[2];
         //unsure of how to make orientation relative
 
         void point();
@@ -36,7 +36,7 @@ double* Field::grid(Object a){
 
 bool Field::isOriented(Object a, Object Ball){
     
-    double orient, x_diff = Ball.g_pos[0] - a.g_pos[0], y_diff = Ball.g_pos[1] - a.g_pos[1];
+    double orient, x_diff = Ball.gridPos[0] - a.gridPos[0], y_diff = Ball.gridPos[1] - a.gridPos[1];
     orient = tan(y_diff/x_diff);
     if(orient = Ball.orientation){
         return 1;
