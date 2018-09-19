@@ -33,3 +33,5 @@
 *.exe
 *.out
 *.app
+
+./PiFiles/RPi.GPIO-0.6.3.tar
