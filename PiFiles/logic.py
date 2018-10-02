@@ -1,21 +1,18 @@
 import connection
 import math
 class Object(object):
-    pos = [0,0]
-    gridpos = [0,0]
-    distance = 0
+    def __init__(self):
+        self.pos = [0,0]
+        self.distance = 0
                     #Triangle Square Circle
     
 class Field(object):
     corners = [0,0,0,0]
     center = [0,0]
 
-    redone = Object()
-    redtwo = Object()
-    redthree = Object()
-    BlueTeam = [ Object(), Object(), Object()]
+    BlueTeam = [Object(), Object(), Object()]
                     #Triangle Square Circle
-    RedTeam = [ redone, redtwo, redthree]
+    RedTeam = [Object(), Object(), Object() ]
                     #Triangle Square Circle
     Ball = Object()
     def distance(self,ball, thing):
