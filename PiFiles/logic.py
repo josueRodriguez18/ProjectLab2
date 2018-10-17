@@ -3,9 +3,6 @@ import math
 class Object(object):
     x = 0
     y = 0
-    def __init__(self):
-        x = 0
-        y = 0
     
 class Field(object):
     
@@ -21,10 +18,6 @@ class Field(object):
     
     
     
-    
-    def __init__(self):
-        corners = [0,0,0,0]
-        center = [0,0]
 
     def distance(self,ball, thing):
         x = ball.x - thing.x
