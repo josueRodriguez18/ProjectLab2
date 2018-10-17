@@ -1,41 +1,42 @@
+import connection
 from connection import parsed
 import logic
+
 main = logic.Field()
+#main.Ball.x = parsed["Ball"][" Object Center"]["X"]
 
-#main.Ball.pos[0] = parsed["Ball"]["Object Center"]["X"]
-sample = [0,0,0,0]
-
-main.RedTeam[0].pos[0] = parsed["Red Team Data"]["Circle"]["Object Center"]['X']
-main.RedTeam[0].pos[1] = parsed["Red Team Data"]["Circle"]["Object Center"]['Y']
-
-sample[0] = parsed["Red Team Data"]["Square"]["Object Center"]['X']
-sample[1] = parsed["Red Team Data"]["Square"]["Object Center"]['Y']
-
-main.RedTeam[1].pos[0] = sample[0]
-main.RedTeam[1].pos[1] = sample[1]
-
-sample[2] = parsed["Red Team Data"]["Square"]["Object Center"]['X']
-sample[3] = parsed["Red Team Data"]["Square"]["Object Center"]['Y']
-
-main.RedTeam[2].pos[0] = sample[2]
-main.RedTeam[2].pos[1] = sample[3]
-
-main.Ball.pos[0] = parsed["Ball"]["Object Center"]["X"]
-main.Ball.pos[1] = parsed["Ball"]["Object Center"]["Y"]
-
-sample[0] = parsed["Red Team Data"]["Triangle"]["Object Center"]['X']
-sample[1] = parsed["Red Team Data"]["Triangle"]["Object Center"]['Y']
+shapes = [ "Triangle", "Circle", "Square"]
+it = 0
+while True:
+    main.RedTriangle.x = parsed["Red Team Data"]["Triangle"]["Object Center"]['X']
+    main.RedTriangle.y = parsed["Red Team Data"]["Triangle"]["Object Center"]['Y']
 
 
-print(main.RedTeam[0].pos[0])
-print(main.RedTeam[0].pos[1])
+    main.RedCircle.x = parsed["Red Team Data"]["Circle"]["Object Center"]['X']
+    main.RedCircle.y = parsed["Red Team Data"]["Circle"]["Object Center"]['Y']
 
-print(main.RedTeam[1].pos[0])
-print(main.RedTeam[1].pos[1])
+    main.RedSquare.x = parsed["Red Team Data"]["Square"]["Object Center"]['X']
+    main.RedSquare.y = parsed["Red Team Data"]["Square"]["Object Center"]['Y']
 
-print(sample[0])
-print(sample[1])
+    main.Ball.x = parsed["Ball"]["Object Center"]['X']
+    main.Ball.y = parsed["Ball"]["Object Center"]['Y']
+
+    main.BlueTriangle.x = parsed["Blue Team Data"]["Triangle"]["Object Center"]['X']
+    main.BlueTriangle.y = parsed["Blue Team Data"]["Triangle"]["Object Center"]['Y']
+
+    main.BlueCircle.x = parsed["Blue Team Data"]["Circle"]["Object Center"]['X']
+    main.BlueCircle.y = parsed["Blue Team Data"]["Circle"]["Object Center"]['Y']
+
+    main.BlueSquare.x = parsed["Blue Team Data"]["Square"]["Object Center"]['X']
+    main.BlueSquare.y = parsed["Blue Team Data"]["Square"]["Object Center"]['Y']
+    
+    main.closest()
+    print(main.closest().x)
+    print(main.closest().y)
+    input()
+    
+    
 
 
-#close = main.closest()
+
 
