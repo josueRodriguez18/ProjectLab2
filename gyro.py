@@ -1,5 +1,6 @@
 from smbus import SMBus
 import time
+
 def twos_comp_combine(msb, lsb):
         twos_comp = 256*msb + lsb
         if twos_comp >= 32768:
@@ -37,5 +38,8 @@ while True:
     z = twos_comp_combine(b.read_byte_data(L3G, Z_MSB), b.read_byte_data(L3G, Z_LSB))
     zdps = z*sens
     heading = zdps *time_div(start)
-    angle += heading
+    if(abs(zdps) > .35):
+            angle += heading
     print(angle)
+    if(abs(angle) == 360):
+            angle = 0
