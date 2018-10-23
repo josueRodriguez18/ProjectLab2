@@ -23,7 +23,7 @@ pwma.start(0)   #ENA duty cycle 0%
 pwmb.start(0)   #ENB duty cycle 0%
 
 #gyro setup
-angle = 0
+angle = [0]
 b = SMBus(1)
 who = 0b11010111
 
@@ -39,7 +39,6 @@ b.write_byte_data(L3G, CTRL_GYRO_1, 0b00001111)
 b.write_byte_data(L3G, CTRL_GYRO_2, 0x00)
 b.write_byte_data(L3G, CTRL_GYRO_6, 0b000000)
 sens = .00875
-queue = Queue.Queue(1)
 
 #___________________________________________________________________________
 
@@ -55,53 +54,55 @@ def backward():
 		x = x+1
 
 def forward(duration):
-	original = angle
+	getGyro(angle)
+	original = angle[0]
 	x = 0
-	default = 90
+	default_right = 90
+	default_left = 90
 	while x < duration:
-		if abs(angle)  < (abs(original) - .5):
+		getGyro(angle)
+		if abs(angle[0]) < abs(original) + 1 and abs(angle[0]) > abs(original) - 1:
 			pwma.ChangeDutyCycle(90)    #90% duty cycl
 			pwmb.ChangeDutyCycle(90)    #90% duty cycle
 			IO.output(13, False)        #IN1
 			IO.output(15, True)         #IN2
 			IO.output(21, True)         #IN3
 			IO.output(23, False)        #IN4
-			default = 90
 			print('no drift')
-			x = x + 1
-		elif getGyro()  > 0:
-			default  = default - 10
-			pwma.ChangeDutyCycle(default)
+			x = x + 100
+
+		elif getGyro(angle)  > 0:
+			if default_right > 10:
+				default_right  = default_right - 1
+			pwma.ChangeDutyCycle(90)
+			pwmb.ChangeDutyCycle(default_right)
+			IO.output(13, False)
+			IO.output(15, True)
+			IO.output(21, True)
+			IO.output(23, False)
+			print('drift left')
+			x = x + 100
+
+		elif getGyro(angle)  < 0:
+			if default_left > 10:
+				default_left = default_left  - 1
+			pwma.ChangeDutyCycle(default_left)
 			pwmb.ChangeDutyCycle(90)
 			IO.output(13, False)
 			IO.output(15, True)
 			IO.output(21, True)
 			IO.output(23, False)
 			print('drift right')
-			queue.get()
-			print('still here')
-		elif getGyro()  < 0:
-			default = default -10
-			pwma.ChanceDutyCycle(90)
-			pwmb.ChanceDutyCycle(default)
-			IO.output(13, False)
-			IO.output(15, True)
-			IO.output(21, True)
-			IO.output(23, False)
-			print('drift left')
-			x = x + 1
-		x = x+1
+			x = x + 100
+		x = x+10000
 
 def stop():
-	x = 0
-	while x < 1:
-		pwma.ChangeDutyCycle(0)     #0% duty cycle
-		pwmb.ChangeDutyCycle(0)     #0% duty cycle
-		IO.output(13, False)        #IN1
-		IO.output(15, False)        #IN2
-		IO.output(21, False)        #IN3
-		IO.output(23, False)        #IN4
-		x = x+1
+	pwma.ChangeDutyCycle(0)     #0% duty cycle
+	pwmb.ChangeDutyCycle(0)     #0% duty cycle
+	IO.output(13, False)        #IN1
+	IO.output(15, False)        #IN2
+	IO.output(21, False)        #IN3
+	IO.output(23, False)        #IN4
 
 def forward_right():
 	x = 0
@@ -158,16 +159,14 @@ def time_div(start):
 	current = time.time()
 	return current - start
 
-def getGyro(angle, queue):
+def getGyro(angle):
 	start = time.time()
 	z = twos_comp_combine(b.read_byte_data(L3G, Z_MSB), b.read_byte_data(L3G, Z_LSB))
 	zdps = z*sens
 	heading = zdps*time_div(start)
-	if abs(zdps) > .2:
-		angle += 3*heading
-	if (abs(angle) >= 360):
-		angle = 0
-	queue.put(heading)
-
-
-threading.Thread(target = getGyro, args=[angle, queue]).start()
+	if(abs(zdps) > .3):
+		angle[0] += heading
+	if (abs(angle[0]) >= 360):
+		angle[0] = 0
+	print(angle[0])
+	return heading

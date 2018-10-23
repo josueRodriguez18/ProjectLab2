@@ -1,6 +1,8 @@
 import pdb
 import pwm0 as pwm
 import time
+import sys
 
-pdb.set_trace()
-thread.start_new_thread(pwm.forward())
+pwm.forward(1000000000)
+
+pwm.stop()
