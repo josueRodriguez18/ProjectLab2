@@ -1,41 +1,41 @@
-import RPi.GPIO as GPIO
-import spidev
+from smbus import SMBus
+import time
+def twos_comp_combine(msb, lsb):
+        twos_comp = 256*msb + lsb
+        if twos_comp >= 32768:
+            return twos_comp - 65536
+        else:
+            return twos_comp
 
-#SDI pins used
-SCL = 14
-MOSI = 12
-MISO = 13
-CS = 0
+def time_div(start):
+    current = time.time()
+    return current - start
 
-#Z output registers
-Z_MSB = 0xAD
-Z_LSB = 0XAC
+angle = 0
 
 
-#pin setup
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(SCL, GPIO.OUT)
-GPIO.setup(MOSI, GPIO.OUT)
-GPIO.setup(MISO, GPIO.IN)
-GPIO.setup(CS,  GPIO.OUT)
 
-#create spidev object and open bus
-spi = spidev.SpiDev()
-spi.open(0, 0) #bus 0 device 0
-#set max speed
-spi.max_speed_hz = 5000
+b = SMBus(1)
+L3G = 0x6b
+who = 0b11010111
+
+Z_MSB = 0x2d
+Z_LSB = 0x2c
+
+CTRL_GYRO_1 = 0x20
+CTRL_GYRO_2 = 0x21 
+CTRL_GYRO_6 = 0x39 
+
+b.write_byte_data(L3G, CTRL_GYRO_1, 0b00001111)
+b.write_byte_data(L3G, CTRL_GYRO_2, 0x00)
+b.write_byte_data(L3G, CTRL_GYRO_6, 0b000000)
+
+sens = .00875
 
 while True:
-    #release chip select
-    GPIO.output(CS, 0)
-    #begin transfers
-    temp = spi.xfer(Z_MSB, 5000, 0, 8)
-    GPIO.output(CS, 1)
-    input()
-
-
-
-
-
-
-
+    start = time.time()
+    z = twos_comp_combine(b.read_byte_data(L3G, Z_MSB), b.read_byte_data(L3G, Z_LSB))
+    zdps = z*sens
+    heading = zdps *time_div(start)
+    angle += heading
+    print(angle)
