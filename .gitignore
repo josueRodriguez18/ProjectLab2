@@ -3,6 +3,8 @@
 *.xml
 *.txt
 *.png
+.local/
+*.pyc
 
 # Compiled Object files
 *.slo
