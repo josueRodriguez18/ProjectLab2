@@ -38,10 +38,9 @@ L3G = 0X6b
 b.write_byte_data(L3G, CTRL_GYRO_1, 0b00001111)
 b.write_byte_data(L3G, CTRL_GYRO_2, 0x00)
 b.write_byte_data(L3G, CTRL_GYRO_6, 0b000000)
-sens = .00875
-
-#___________________________________________________________________________
-
+# sens = .00875 original sens
+sens = .01750
+#_________7__________________________________________________________________
 def backward():
 	x = 0
 	while x < 1:
@@ -85,7 +84,7 @@ def forward(duration):
 
 		elif getGyro(angle)  < 0:
 			if default_left > 10:
-				default_left = default_left  - 1
+				default_left = default_left  - 2
 			pwma.ChangeDutyCycle(default_left)
 			pwmb.ChangeDutyCycle(90)
 			IO.output(13, False)
@@ -128,16 +127,16 @@ def forward_left():
 
 def lspin(angle, final):   #current angle, desired angle
 	getGyro(angle)
-	current = angle[0]
-	while current != final:
+	pwma.ChangeDutyCycle(45)    #90% duty cycle
+	pwmb.ChangeDutyCycle(45)    #90% duty cycle
+	IO.output(13, True)         #IN1
+	IO.output(15, False)        #IN2 
+	IO.output(21, True)        #IN3
+	IO.output(23, False)         #IN4
+#	final = final - 50
+	while angle[0]  < final:
 		getGyro(angle)
-		current = angle[0]
-		pwma.ChangeDutyCycle(30)    #90% duty cycle
-		pwmb.ChangeDutyCycle(30)    #90% duty cycle
-		IO.output(13, True)         #IN1
-		IO.output(15, False)        #IN2 
-		IO.output(21, True)        #IN3
-		IO.output(23, False)         #IN4
+	stop()
 
 def rspin(angle, final): #current angle, desired angle
 	getGyro(angle)
@@ -166,11 +165,11 @@ def time_div(start):
 def getGyro(angle):
 	start = time.time()
 	z = twos_comp_combine(b.read_byte_data(L3G, Z_MSB), b.read_byte_data(L3G, Z_LSB))
-	zdps = z*sens
-	heading = zdps*time_div(start)
-	if(abs(zdps) > .3):
-		angle[0] += heading
+	#zdps = z*sens
+	heading = z*sens*time_div(start)
+	print(angle[0])
+	angle[0] += heading
 	if (abs(angle[0]) >= 360):
 		angle[0] = 0
-	print(angle[0])
+	#print(angle[0])
 	return heading

@@ -2,13 +2,21 @@
 *.d
 *.xml
 *.txt
+<<<<<<< HEAD
 .local/
+=======
+*.png
+.local/
+*.pyc
+
+>>>>>>> c28968f1bc31fc5c0d85c0815b6a74c062949e32
 # Compiled Object files
 *.slo
 *.lo
 *.o
 *.obj
 *.gz
+*.save
 
 # Precompiled Headers
 *.gch

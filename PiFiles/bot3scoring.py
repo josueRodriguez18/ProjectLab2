@@ -1,4 +1,4 @@
-import gyr00 as gyro
+import rotateFunction as gyro
 import pwm0 as pwm
 import paho.mqtt.client as mqtt
 import math
@@ -15,6 +15,7 @@ midpointX = 0
 midpointY = 0
 theta = 0
 phase = 0
+getPath = "http://192.168.137.1:8001/FieldData/GetData"
 
 def readIn(message):
     new = message
@@ -86,14 +87,14 @@ def driveF():
 	    pwm.stop()
 	    time.sleep(0.5)
 	    oldparsed = newparsed
-            r = requests.get("http://172.16.0.1:8001/FieldData/GetData", timeout=2)
+            r = requests.get(getPath, timeout=2)
             parsed = json.loads(r.text)
 	    newparsed = parsed["Blue Team Data"]["Triangle"]["Object Center"]["X"]
 	    while oldparsed==newparsed:
 		print("Data did not update.")
 		client.publish("blanotiger/debug",payload="Data didn't update.",qos=0,retain=False)
 		time.sleep(0.5)
-		r = requests.get("http://172.16.0.1:8001/FieldData/GetData", timeout=2)
+		r = requests.get(getPath, timeout=2)
 		parsed = json.loads(r.text)
 		newparsed = parsed["Blue Team Data"]["Triangle"]["Object Center"]["X"]
             botX = float(parsed["Blue Team Data"]["Triangle"]["Object Center"]["X"])
@@ -106,14 +107,14 @@ def driveF():
 	while (botX >= ballX)or(botY >= ballY):
 	    time.sleep(0.5)
             oldparsed = newparsed
-            r = requests.get("http://172.16.0.1:8001/FieldData/GetData", timeout=2)
+            r = requests.get(getPath, timeout=2)
             parsed = json.loads(r.text)
             newparsed = parsed["Blue Team Data"]["Triangle"]["Object Center"]["X"]
             while oldparsed==newparsed:
                 print("Data did not update.")
 		client.publish("blanotiger/debug",payload="Data didn't update.",qos=0,retain=False)
                 time.sleep(0.5)
-                r = requests.get("http://172.16.0.1:8001/FieldData/GetData", timeout=2)
+                r = requests.get(getPath, timeout=2)
                 parsed = json.loads(r.text)
                 newparsed = parsed["Blue Team Data"]["Triangle"]["Object Center"]["X"]
             botX = float(parsed["Blue Team Data"]["Triangle"]["Object Center"]["X"])
@@ -173,7 +174,7 @@ client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
 client.on_disconnect = on_disconnect
-client.connect("172.16.0.124", 1883, 60) #Formatted (address, port, keepalive(seconds))
+client.connect("192.168.137.124", 1883, 60) #Formatted (address, port, keepalive(seconds))
 
 #This code will subscribe to a topic:
 print("Subscribing to topic 'blanotiger/robot3'...")

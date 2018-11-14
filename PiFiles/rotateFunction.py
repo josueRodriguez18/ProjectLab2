@@ -1,8 +1,7 @@
+
 from smbus import SMBus
 import time
 import pwm0 as pwm
-import threading
-
 
 def twos_comp_combine(msb, lsb):
         twos_comp = 256*msb + lsb
@@ -15,8 +14,10 @@ def time_div(start):
     current = time.time()
     return current - start
 
-angle = 0
-while True:
+def rotate(value1):
+	angle = 0
+
+
 
 	b = SMBus(1)
 	L3G = 0x6b
@@ -35,16 +36,32 @@ while True:
 
 	sens = .00875
 
-   	start = time.time()
-    	z = twos_comp_combine(b.read_byte_data(L3G, Z_MSB), b.read_byte_data(L3G, Z_LSB))
-    	zdps = z*sens
-    	heading = zdps*time_div(start)
-	print(angle)
-	if abs(zdps) > .2:
-		angle += 3*heading
-	if(abs(angle) >=  360):
-      		angle = 0
-    	
+	value2 = True
+	while value2:
+    		start = time.time()
+    		z = twos_comp_combine(b.read_byte_data(L3G, Z_MSB), b.read_byte_data(L3G, Z_LSB))
+    		zdps = z*sens
+    		heading = zdps *time_div(start)
+    		angle += heading
+    		print(angle)
+		
+		if value1 > 0:
+			if(abs(angle) >=  360):
+        			angle = 0
+    			if angle <  value1:
+        		 	pwm.lspin()
+    			else:
+         			pwm.stop()
+				value2 = False
+		elif value1 < 0:
+			if(abs(angle) >=  360):
+                        	angle = 0
+                	if angle >  value1:
+                         	pwm.rspin()
+                	else:
+                        	pwm.stop()
+				value2 = False
+
 
 #while  True:
 #    start = time.time()
