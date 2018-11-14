@@ -2,7 +2,7 @@
 *.d
 *.xml
 *.txt
-
+.local/
 # Compiled Object files
 *.slo
 *.lo
