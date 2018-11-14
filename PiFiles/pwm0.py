@@ -126,27 +126,31 @@ def forward_left():
 		IO.output(23, True)
 		x = x+1
 
-def lspin():
-	x = 0
-	while x < 1:
+def lspin(angle, final):   #current angle, desired angle
+	getGyro(angle)
+	current = angle[0]
+	while current != final:
+		getGyro(angle)
+		current = angle[0]
 		pwma.ChangeDutyCycle(30)    #90% duty cycle
 		pwmb.ChangeDutyCycle(30)    #90% duty cycle
 		IO.output(13, True)         #IN1
 		IO.output(15, False)        #IN2 
 		IO.output(21, True)        #IN3
 		IO.output(23, False)         #IN4
-		x = x+1
 
-def rspin():
-	x = 0
-	while x < 1:
+def rspin(angle, final): #current angle, desired angle
+	getGyro(angle)
+	current = angle[0]
+	while current != angle1:
+		getGyro(angle)
+		current =  angle[0]
 		pwma.ChangeDutyCycle(30)    #90% duty cycle
 		pwmb.ChangeDutyCycle(30)    #90% duty cycle
 		IO.output(13, False)         #IN1
 		IO.output(15, True)        #IN2 
 		IO.output(21, False)        #IN3
 		IO.output(23, True)         #IN4
-		x = x+1
 
 def twos_comp_combine(msb, lsb):
 	twos_comp = 256*msb + lsb
