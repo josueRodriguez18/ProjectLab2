@@ -1,4 +1,5 @@
 import rotateFunction as gyro
+import encoder as str8
 import pwm0 as pwm
 import paho.mqtt.client as mqtt
 import math
@@ -83,7 +84,7 @@ def driveF():
     newparsed = ' '
     if phase == 1:
         while botX > midpointX:
-            pwm.forward()
+            str8.forward(5)
 	    pwm.stop()
 	    time.sleep(0.5)
 	    oldparsed = newparsed
@@ -103,7 +104,7 @@ def driveF():
         print("Stopping...")
 	client.publish("blanotiger/debug",payload="Movement 1 Complete.",qos=0,retain=False)
     elif phase == 2:
-        pwm.forward()
+        str8.forward(5)
 	while (botX >= ballX)or(botY >= ballY):
 	    time.sleep(0.5)
             oldparsed = newparsed
@@ -126,8 +127,7 @@ def driveF():
 
 def rotateL(value1):
     client.publish("blanotiger/debug",payload="Called rotateL("+str(value1)+").",qos=0,retain=False)
-    value2 = value1*7/9
-    gyro.rotate(value2)
+    gyro.rotate(value1)
     pwm.stop()
 
 #on_connect to the MQTT server:
@@ -147,7 +147,8 @@ def on_message(client,userdata,message):
     if msg=="stop":
         pwm.stop()
     elif msg=="forward":
-	pwm.forward()
+	str8.forward(100)
+	pwm.stop()
     elif msg[0]=="_":
 	q = int(msg[1:5])
 	gyro.rotate(q)

@@ -1,8 +1,22 @@
-import pdb
+#import pdb
+import encoder as str8
+import rotateFunction as rotate
 import pwm0 as pwm
 import time
 import sys
 
-pwm.forward(10000000000000)
-#pwm.lspin(pwm.angle, 180)
-pwm.stop()
+while True:
+	str8.forward(10)
+	pwm.stop()
+	time.sleep(1)
+	rotate.rotate(180)
+	pwm.stop()
+	time.sleep(3)
+#	str8.forward(10)
+#	pwm.stop()
+#	time.sleep(1)
+#	pwm.stop()
+#	time.sleep(1)
+#	str8.forward(15)
+#	time.sleep(5)
+	

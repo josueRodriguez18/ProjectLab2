@@ -42,8 +42,8 @@ IO.output(26, False)
 
 #Forward
 def forward(value1):
-    pwma.ChangeDutyCycle(75)    #90% duty cycle on motor a
-    pwmb.ChangeDutyCycle(75)    #90% duty cycle on motor b
+    pwma.ChangeDutyCycle(70)    #90% duty cycle on motor a
+    pwmb.ChangeDutyCycle(70)    #90% duty cycle on motor b
     IO.output(13, False)        #IN1 motor a
     IO.output(15, True)         #IN2 motor a
     IO.output(21, True)         #IN3 motor b
