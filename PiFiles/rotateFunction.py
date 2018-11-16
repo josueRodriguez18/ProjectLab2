@@ -33,45 +33,62 @@ def time_div(start):
 
 def rotate(value1):
 	angle = 0
-	global ready
-	#value1 = value1*7/10
 	value2 = True
+	turnVal = "right"
 	global start
 	start = time.time()
 	while value2:
-		ready = b.read_byte_data(L3G, CTRL_DRDY)
-		if(ready and 0b00000100 == 0b00000100):
-			div = time_div(start)
-			start = time.time()
-    			z = twos_comp_combine(b.read_byte_data(L3G, Z_MSB), b.read_byte_data(L3G, Z_LSB))
-    			zdps = z*sens
-    			heading = zdps *div
-    			angle += heading
-    			print(angle)
-			if value1 > 0:
-				if(abs(angle) >=  360):
-        				angle = 0
-    				if angle <  value1:
-        		 		pwm.lspin()
-    				else:
-         				pwm.stop()
-					value2 = False
-			elif value1 < 0:
-				if(abs(angle) >=  360):
-                        		angle = 0
-                		if angle >  value1:
-                         		pwm.rspin()
-                		else:
-                        		pwm.stop()
-					value2 = False
-		print(ready)
-		ready = b.read_byte_data(L3G, CTRL_DRDY)
-		print(ready)
+		angle += sample()
+    		print(angle)
 
-#while  True:
-#    start = time.time()
-#    z = twos_comp_combine(b.read_byte_data(L3G, Z_MSB), b.read_byte_data(L3G, Z_LSB))
-#    zdps = z*sens
-#    heading = zdps *time_div(start)
-#    angle += heading
-#    print(angle)
+		if(abs(angle) >= 360):
+			angle = 0
+
+		if value1 > 0:
+    			if angle <  value1:
+				angle += sample()
+        		 	pwm.lspin()
+				turnVal = "left"
+				angle += sample()
+    			else:
+         			pwm.stop()
+				value2 = False
+				angle += sample()
+		elif value1 < 0:
+                	if angle >  value1:
+				angle += sample()
+				pwm.rspin()
+				turnVal = "right"
+				angle += sample()
+                	else:
+                        	pwm.stop()
+				value2 = False
+				angle += sample()
+
+	angle += sample()
+	while not((abs(angle) > abs(value1) - .5) & (abs(angle) < abs(value1) + .5)) :
+		angle += sample()
+		print(angle)
+		if(turnVal == "right"):
+			angle += sample()
+			pwm.lspin()
+			angle += sample()
+		else:
+			angle += sample()
+			pwm.rspin()
+			angle += sample()
+
+	pwm.stop()
+
+def sample():
+	global ready
+	global start
+	ready = b.read_byte_data(L3G, CTRL_DRDY)
+	if(ready & 0b00000100 == 0b00000100):
+		div = time_div(start)
+		start = time.time()
+		z = twos_comp_combine(b.read_byte_data(L3G, Z_MSB), b.read_byte_data(L3G, Z_LSB))
+		zdps = z*sens
+		return zdps*div
+	else:
+		return 0
