@@ -24,6 +24,7 @@ pwmb.start(0)   #ENB duty cycle 0%
 
 #gyro setup
 angle = [0]
+start = time.time()
 b = SMBus(1)
 who = 0b11010111
 
@@ -33,13 +34,13 @@ Z_LSB = 0x2c
 CTRL_GYRO_1 = 0x20
 CTRL_GYRO_2 = 0x21
 CTRL_GYRO_6 = 0x39
-L3G = 0X6b
+CTRL_DRDY = 0x27
+L3G = 0x6b
 
-b.write_byte_data(L3G, CTRL_GYRO_1, 0b00001111)
+b.write_byte_data(L3G, CTRL_GYRO_1, 0b00001100)
 b.write_byte_data(L3G, CTRL_GYRO_2, 0x00)
 b.write_byte_data(L3G, CTRL_GYRO_6, 0b000000)
-# sens = .00875 original sens
-sens = .01750
+sens = .00875
 #_________7__________________________________________________________________
 def backward():
 	x = 0
@@ -126,34 +127,28 @@ def forward_left():
 		x = x+1
 
 def lspin():
-    x = 0
-    while x < 1:
-	pwma.ChangeDutyCycle(45)    #90% duty cycle
-	pwmb.ChangeDutyCycle(45)    #90% duty cycle
-	IO.output(13, True)         #IN1
-	IO.output(15, False)        #IN2
-	IO.output(21, True)	    #IN3
-	IO.output(23, False)        #IN4
+	x = 0
+	while x < 1:
+		pwma.ChangeDutyCycle(45)
+		pwmb.ChangeDutyCycle(45)
+		IO.output(13, True)         #IN1
+		IO.output(15, False)        #IN2
+		IO.output(21, True)	    #IN3
+		IO.output(23, False)        #IN4
 #	final = final - 50
 #	while angle[0]  < final:
 #		getGyro(angle)
 #	stop()
-	x = x+1
 
 def rspin(): #current angle, desired angle
-	#getGyro(angle)
-	#current = angle[0]
-	#while current != angle1:
-		#getGyro(angle)
-		#current =  angle[0]
-    x = 0
-    while x < 1:
-	pwma.ChangeDutyCycle(45)    #90% duty cycle
-	pwmb.ChangeDutyCycle(45)    #90% duty cycle
-	IO.output(13, False)        #IN1
-	IO.output(15, True)         #IN2
-	IO.output(21, False)        #IN3
-	IO.output(23, True)         #IN4
+	x = 0
+	while x < 1:
+		pwma.ChangeDutyCycle(45)	#90% duty cycle
+		pwmb.ChangeDutyCycle(45)	#90% duty cycle
+		IO.output(13, False)		#IN1
+		IO.output(15, True)			#IN2
+		IO.output(21, False)        #IN3
+		IO.output(23, True)         #IN4
 	x = x+1
 
 def twos_comp_combine(msb, lsb):
@@ -168,13 +163,17 @@ def time_div(start):
 	return current - start
 
 def getGyro(angle):
-	start = time.time()
-	z = twos_comp_combine(b.read_byte_data(L3G, Z_MSB), b.read_byte_data(L3G, Z_LSB))
-	#zdps = z*sens
-	heading = z*sens*time_div(start)
-	print(angle[0])
-	angle[0] += heading
-	if (abs(angle[0]) >= 360):
-		angle[0] = 0
+	while True:
+		ready = b.read_byte_data(L3G, CTRL_DRDY) #checks to see if there is new Z data ready
+		if(ready * 0b0000100 == 0b0000100): #run if new data is ready
+			div = time_div(start) #time division between values
+			start = time.time() #record time for next sample
+			z = twos_comp_combine(b.read_byte_data(L3G, Z_MSB), b.read_byte_data(L3G, Z_LSB))
+			zdps = z*sens
+			heading = zdps*div
+			angle[0] += heading
+			print(angle[0])
+		if (abs(angle[0]) >= 360):
+			angle[0] = 0
 	#print(angle[0])
 	return heading
