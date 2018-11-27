@@ -1,6 +1,4 @@
-from smbus import SMBus
 import RPi.GPIO as IO
-import time
 
 #pwm setup
 IO.setwarnings(False)   #disable warnings
