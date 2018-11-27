@@ -53,17 +53,17 @@ def rotate(value1):
 		if value1 > 0:
 			direction = "left"
 			if angle <  value1:
-       	 		pwm.lspin()
-   			else:
-   				pwm.stop()
+				pwm.lspin()
+			else:
+				pwm.stop()
 				angle += sample()
 			value2 = False
 			
 		elif value1 < 0:
 			direction = "right"
-            if angle >  value1:
-         		pwm.rspin()
-    		else:
+			if angle >  value1:
+				pwm.rspin()
+			else:
 				pwm.stop()
 				angle += sample()
 			value2 = False
@@ -82,11 +82,11 @@ def sample():
 	global start
 
 	ready = b.read_byte_data(L3G, CTRL_DRDY) #check if new data is ready
-		if(ready and 0b00000100 == 0b00000100): #run when new z data is ready
-			div = time_div(start) #time between samples
-			start = time.time() #sample end time = sample begin time for next sample
-    		z = twos_comp_combine(b.read_byte_data(L3G, Z_MSB), b.read_byte_data(L3G, Z_LSB)) #take sample
-    		zdps = z*sens #adjust for sensitivity rating
-    		return zdps*div #add data to recorded angle
-		else:
-			return 0
+	if(ready and 0b00000100 == 0b00000100): #run when new z data is ready
+		div = time_div(start) #time between samples
+		start = time.time() #sample end time = sample begin time for next sample
+		z = twos_comp_combine(b.read_byte_data(L3G, Z_MSB), b.read_byte_data(L3G, Z_LSB)) #take sample
+		zdps = z*sens #adjust for sensitivity rating
+		return zdps*div #add data to recorded angle
+	else:
+		return 0
